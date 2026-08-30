@@ -17,6 +17,14 @@
     "go"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eros483/opencode-usage-tui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Eros483/opencode-usage-tui/issues"
+  },
+  "homepage": "https://github.com/Eros483/opencode-usage-tui#readme",
   "engines": {
     "opencode": ">=1.18"
   },
