@@ -1,0 +1,34 @@
+{
+  "name": "opencode-usage-tui",
+  "version": "0.1.0",
+  "description": "OpenCode Go usage in the TUI — sidebar section + /usage command",
+  "type": "module",
+  "exports": {
+    "./tui": "./src/tui.tsx"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-tui",
+    "plugin",
+    "usage",
+    "go"
+  ],
+  "license": "MIT",
+  "engines": {
+    "opencode": ">=1.18"
+  },
+  "peerDependencies": {
+    "@opentui/core": "*",
+    "@opentui/solid": "*",
+    "solid-js": "*"
+  },
+  "devDependencies": {
+    "@opencode-ai/plugin": "1.18.25",
+    "@opentui/core": "0.5.9",
+    "@opentui/solid": "0.5.9",
+    "solid-js": "1.9.15"
+  }
+}
