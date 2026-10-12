@@ -11,8 +11,22 @@ Monthly: 6%
 
 ## Install
 
-```sh
-opencode plugin add opencode-usage-tui
+Requires OpenCode v2.
+
+Add it to your `opencode.json` (TUI plugins load automatically in the CLI):
+
+```json
+{
+  "plugins": ["opencode-usage-tui"]
+}
+```
+
+Or to `cli.json` for a CLI-only install:
+
+```json
+{
+  "plugins": ["opencode-usage-tui"]
+}
 ```
 
 Requires an [OpenCode Go](https://opencode.ai/docs/go/) subscription. Reads your existing API key from OpenCode's auth store — nothing to configure.
@@ -21,4 +35,4 @@ Requires an [OpenCode Go](https://opencode.ai/docs/go/) subscription. Reads your
 
 - Usage data refreshes every 5 minutes
 - `/usage` shows the same numbers with dollar values and reset times
-- Source: ~100 lines, no build step
+- Built against the v2 TUI plugin API (`@opencode/plugin/tui`)

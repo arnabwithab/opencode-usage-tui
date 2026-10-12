@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs"
 import { homedir } from "node:os"
 import { createSignal, Show } from "solid-js"
-import type { TuiPlugin, TuiPluginApi, TuiPluginModule } from "@opencode-ai/plugin/tui"
+import { Plugin, usePlugin } from "@opencode/plugin/tui"
 
 // ponytail: dollar caps hardcoded from https://opencode.ai/docs/go — update if the plan changes
 const CAPS = { rolling: 12, weekly: 30, monthly: 60 } as const
@@ -25,7 +25,10 @@ function readKey(): string | undefined {
 
 async function refresh(): Promise<void> {
   const key = readKey()
-  if (!key) return
+  if (!key) {
+    setUsage(null)
+    return
+  }
   try {
     const res = await fetch(ENDPOINT, { headers: { Authorization: `Bearer ${key}` } })
     if (res.ok) setUsage((await res.json()).usage)
@@ -46,18 +49,18 @@ function resetsIn(iso: string): string {
 const WINDOWS = ["rolling", "weekly", "monthly"] as const
 const LABELS = { rolling: "5-hour", weekly: "Weekly", monthly: "Monthly" } as const
 
-function View(props: { api: TuiPluginApi }) {
-  const theme = () => props.api.theme.current
+function View() {
+  const context = usePlugin()
   return (
     <box>
-      <text fg={theme().text}>
+      <text fg={context.theme.text.base}>
         <b>Usage</b>
       </text>
-      <Show when={usage()} fallback={<text fg={theme().textMuted}>no usage data</text>}>
+      <Show when={usage()} fallback={<text fg={context.theme.text.muted}>no usage data</text>}>
         {(data) => (
           <>
             {WINDOWS.map((w) => (
-              <text fg={theme().textMuted}>{`${LABELS[w]}: ${data()[w].percent}%`}</text>
+              <text fg={context.theme.text.muted}>{`${LABELS[w]}: ${data()[w].percent}%`}</text>
             ))}
           </>
         )}
@@ -66,45 +69,48 @@ function View(props: { api: TuiPluginApi }) {
   )
 }
 
-const tui: TuiPlugin = async (api) => {
-  void refresh()
-  const timer = setInterval(refresh, 5 * 60_000)
-  api.lifecycle.onDispose(() => clearInterval(timer))
+export default Plugin.define({
+  id: "usage",
+  async setup(context) {
+    void refresh()
+    const timer = setInterval(refresh, 5 * 60_000)
 
-  api.slots.register({
-    order: 150,
-    slots: {
-      sidebar_content() {
-        return <View api={api} />
-      },
-    },
-  })
+    context.ui.slot({
+      append: "sidebar.content",
+      render: () => <View />,
+    })
 
-  api.keymap.registerLayer({
-    commands: [
-      {
-        name: "usage.show",
-        title: "Show Go usage",
-        category: "Plugin",
-        namespace: "palette",
-        slashName: "usage",
-        run() {
-          const u = usage()
-          if (!u) {
-            api.ui.toast({ variant: "warning", title: "Usage", message: "No usage data — signed in to OpenCode Go?" })
-            return
-          }
-          api.ui.toast({
-            title: "OpenCode Go usage",
-            message: WINDOWS.map(
-              (w) => `${LABELS[w]}: ${u[w].percent}% (${money(u[w].percent, CAPS[w])}) · resets in ${resetsIn(u[w].resetsAt)}`,
-            ).join("\n"),
-          })
+    context.keymap.layer(() => ({
+      mode: "global",
+      commands: [
+        {
+          id: "usage.show",
+          title: "Show Go usage",
+          group: "Plugin",
+          palette: true,
+          slash: { name: "usage" },
+          run() {
+            const u = usage()
+            if (!u) {
+              context.ui.toast.show({
+                variant: "warning",
+                title: "Usage",
+                message: "No usage data — signed in to OpenCode Go?",
+              })
+              return
+            }
+            context.ui.toast.show({
+              title: "OpenCode Go usage",
+              message: WINDOWS.map(
+                (w) =>
+                  `${LABELS[w]}: ${u[w].percent}% (${money(u[w].percent, CAPS[w])}) · resets in ${resetsIn(u[w].resetsAt)}`,
+              ).join("\n"),
+            })
+          },
         },
-      },
-    ],
-  })
-}
+      ],
+    }))
 
-const plugin: TuiPluginModule = { id: "usage", tui }
-export default plugin
+    return () => clearInterval(timer)
+  },
+})

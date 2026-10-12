@@ -1,6 +1,6 @@
 {
   "name": "opencode-usage-tui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "OpenCode Go usage in the TUI — sidebar section + /usage command",
   "type": "module",
   "exports": {
@@ -19,24 +19,29 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Eros483/opencode-usage-tui.git"
+    "url": "git+https://github.com/arnabwithab/opencode-usage-tui.git"
   },
   "bugs": {
-    "url": "https://github.com/Eros483/opencode-usage-tui/issues"
+    "url": "https://github.com/arnabwithab/opencode-usage-tui/issues"
   },
-  "homepage": "https://github.com/Eros483/opencode-usage-tui#readme",
+  "homepage": "https://github.com/arnabwithab/opencode-usage-tui#readme",
   "engines": {
-    "opencode": ">=1.18"
+    "opencode": ">=2.0"
+  },
+  "dependencies": {
+    "@opencode/plugin": "^2.0.27"
   },
   "peerDependencies": {
-    "@opentui/core": "*",
-    "@opentui/solid": "*",
-    "solid-js": "*"
+    "@opentui/core": ">=0.5.17",
+    "@opentui/solid": ">=0.5.17",
+    "solid-js": ">=1.9.0"
   },
   "devDependencies": {
-    "@opencode-ai/plugin": "1.18.25",
-    "@opentui/core": "0.5.9",
-    "@opentui/solid": "0.5.9",
-    "solid-js": "1.9.15"
+    "@opencode/theme": "2.0.27",
+    "@opentui/core": "0.5.17",
+    "@opentui/solid": "0.5.17",
+    "@types/node": "22.10.2",
+    "solid-js": "1.9.15",
+    "typescript": "5.8.2"
   }
 }
